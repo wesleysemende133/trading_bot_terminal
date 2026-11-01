@@ -6,8 +6,10 @@ import { MarketAnalysisPanel } from '../components/MarketAnalysisPanel';
 import { PerformancePanel } from '../components/PerformancePanel';
 import { TradeHistoryPanel } from '../components/TradeHistoryPanel';
 import { NewsPanel } from '../components/NewsPanel';
+import { LivePositionsPanel } from '../components/LivePositionsPanel';
 import ProChart from '../components/ProChart';
-import { Activity, TrendingUp, TrendingDown } from 'lucide-react';
+import ProChartFocused from '../components/ProChartFocused';
+import { Activity, TrendingUp, TrendingDown, BarChart2, Maximize2 } from 'lucide-react';
 
 export function DashboardPage() {
   const signalsObj = useMarketStore((state) => state.signals);
@@ -15,6 +17,7 @@ export function DashboardPage() {
   const symbols = useMarketStore((state) => state.symbols);
 
   const [activeSymbol, setActiveSymbol] = useState('BTCUSDT');
+  const [chartMode, setChartMode] = useState('complete'); // 'complete' | 'focused'
   const signals = React.useMemo(() => Object.values(signalsObj), [signalsObj]);
   const activeData = prices[activeSymbol] || {};
 
@@ -47,16 +50,18 @@ export function DashboardPage() {
   };
 
   const Sidebar = (
-    <div className="flex flex-col">
-      {/* Sinais do Bot */}
-      <div className="border-b border-tv-border">
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 border-b border-tv-border">
+        <LivePositionsPanel />
+      </div>
+      <div className="flex-shrink-0 border-b border-tv-border">
         <div className="px-4 py-3 border-b border-tv-border">
           <h2 className="text-sm font-bold text-white">Sinais do Bot</h2>
           <p className="text-xs text-gray-400">Atualização Automática</p>
         </div>
-        <div className="p-3 space-y-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+        <div className="p-3 space-y-3" style={{ maxHeight: '300px', overflowY: 'auto' }}>
           {signals.length === 0 ? (
-            <div className="text-center text-gray-500 text-sm py-8">
+            <div className="text-center text-gray-500 text-sm py-6">
               <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
               <p>Aguardando sinais...</p>
             </div>
@@ -65,19 +70,13 @@ export function DashboardPage() {
           )}
         </div>
       </div>
-
-      {/* Performance */}
-      <div className="border-b border-tv-border">
+      <div className="flex-shrink-0 border-b border-tv-border">
         <PerformancePanel />
       </div>
-
-      {/* Histórico */}
-      <div className="border-b border-tv-border" style={{ height: '240px' }}>
+      <div className="flex-shrink-0 border-b border-tv-border" style={{ height: '240px' }}>
         <TradeHistoryPanel />
       </div>
-
-      {/* Notícias */}
-      <div className="border-b border-tv-border" style={{ height: '220px' }}>
+      <div className="flex-shrink-0 border-b border-tv-border" style={{ height: '220px' }}>
         <NewsPanel />
       </div>
     </div>
@@ -108,10 +107,37 @@ export function DashboardPage() {
                 <span>{(activeData.change || 0) >= 0 ? '+' : ''}{(activeData.change || 0).toFixed(2)}%</span>
               </span>
             </div>
-            <div className="flex items-center space-x-4 text-[10px] text-gray-400">
-              <span>Máx 24h: {activeData.high ? activeData.high.toFixed(2) : '---'}</span>
-              <span>Mín 24h: {activeData.low ? activeData.low.toFixed(2) : '---'}</span>
-              <span>Vol: {activeData.volume ? (activeData.volume / 1000).toFixed(1) + 'K' : '---'}</span>
+
+            <div className="flex items-center space-x-4">
+              {/* Seletor de modos */}
+              <div className="flex items-center space-x-1 bg-tv-bg rounded p-0.5 border border-tv-border">
+                <button
+                  onClick={() => setChartMode('complete')}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded text-[10px] font-bold transition-colors ${
+                    chartMode === 'complete' ? 'bg-tv-blue text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Modo Completo (5 paineis)"
+                >
+                  <BarChart2 className="w-3 h-3" />
+                  <span>Completo</span>
+                </button>
+                <button
+                  onClick={() => setChartMode('focused')}
+                  className={`flex items-center space-x-1 px-2 py-1 rounded text-[10px] font-bold transition-colors ${
+                    chartMode === 'focused' ? 'bg-tv-blue text-white' : 'text-gray-400 hover:text-white'
+                  }`}
+                  title="Modo Foco (velas grandes + mini-indicadores)"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                  <span>Foco</span>
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-4 text-[10px] text-gray-400">
+                <span>Máx 24h: {activeData.high ? activeData.high.toFixed(2) : '---'}</span>
+                <span>Mín 24h: {activeData.low ? activeData.low.toFixed(2) : '---'}</span>
+                <span>Vol: {activeData.volume ? (activeData.volume / 1000).toFixed(1) + 'K' : '---'}</span>
+              </div>
             </div>
           </div>
 
@@ -120,7 +146,11 @@ export function DashboardPage() {
           </div>
 
           <div className="w-full bg-tv-bg" style={{ height: 'calc(100vh - 220px)', minHeight: '600px' }}>
-            <ProChart symbol={activeSymbol} />
+            {chartMode === 'complete' ? (
+              <ProChart symbol={activeSymbol} />
+            ) : (
+              <ProChartFocused symbol={activeSymbol} />
+            )}
           </div>
         </div>
       </div>
