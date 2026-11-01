@@ -47,16 +47,17 @@ export function DashboardPage() {
   };
 
   const Sidebar = (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-        <div className="px-4 py-3 border-b border-tv-border shrink-0">
+    <div className="flex flex-col">
+      {/* Sinais do Bot */}
+      <div className="border-b border-tv-border">
+        <div className="px-4 py-3 border-b border-tv-border">
           <h2 className="text-sm font-bold text-white">Sinais do Bot</h2>
           <p className="text-xs text-gray-400">Atualização Automática</p>
         </div>
-        <div className="flex-1 overflow-y-auto p-3 space-y-3">
+        <div className="p-3 space-y-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
           {signals.length === 0 ? (
-            <div className="text-center text-gray-500 mt-10 text-sm">
-              <Activity className="w-10 h-10 mx-auto mb-2 opacity-30" />
+            <div className="text-center text-gray-500 text-sm py-8">
+              <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
               <p>Aguardando sinais...</p>
             </div>
           ) : (
@@ -65,15 +66,18 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="border-t border-tv-border" style={{ height: '400px' }}>
+      {/* Performance */}
+      <div className="border-b border-tv-border">
         <PerformancePanel />
       </div>
 
-      <div className="border-t border-tv-border" style={{ height: '240px' }}>
+      {/* Histórico */}
+      <div className="border-b border-tv-border" style={{ height: '240px' }}>
         <TradeHistoryPanel />
       </div>
 
-      <div className="border-t border-tv-border" style={{ height: '220px' }}>
+      {/* Notícias */}
+      <div className="border-b border-tv-border" style={{ height: '220px' }}>
         <NewsPanel />
       </div>
     </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Activity } from 'lucide-react';
 import { useMarketStore } from '../../application/store/useMarketStore';
 import { BotControlPanel } from '../components/BotControlPanel';
+import { BalancePanel } from '../components/BalancePanel';
 
 export function DashboardLayout({ children, sidebar }) {
   const connectionStatus = useMarketStore((state) => state.connectionStatus);
@@ -15,12 +16,10 @@ export function DashboardLayout({ children, sidebar }) {
           <Activity className="text-tv-blue w-6 h-6" />
           <h1 className="text-lg font-bold text-white tracking-wider">ALGO TRADER PRO</h1>
         </div>
-        
-        <div className="flex items-center space-x-4">
-          {/* Controlo do Bot (no header) */}
-          <BotControlPanel />
 
-          {/* Status da ligação */}
+        <div className="flex items-center space-x-6">
+          <BalancePanel />
+          <BotControlPanel />
           <div className="flex items-center space-x-2 bg-tv-bg px-3 py-1 rounded border border-tv-border">
             <span className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-tv-green animate-pulse' : 'bg-tv-red'}`} />
             <span className="text-xs font-semibold">
@@ -32,12 +31,12 @@ export function DashboardLayout({ children, sidebar }) {
 
       {/* CONTEÚDO */}
       <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 relative flex flex-col">
+        <main className="flex-1 relative flex flex-col overflow-hidden">
           {children}
         </main>
-        
-        {/* PAINEL LATERAL (Sinais + Notícias) */}
-        <aside className="w-80 bg-tv-bg border-l border-tv-border flex flex-col shrink-0">
+
+        {/* SIDEBAR DIREITA — com scroll */}
+        <aside className="w-80 bg-tv-bg border-l border-tv-border flex flex-col shrink-0 overflow-y-auto">
           {sidebar}
         </aside>
       </div>
